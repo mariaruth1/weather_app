@@ -1,39 +1,61 @@
 import 'package:flutter/material.dart';
+import 'chart_screen.dart';
 import 'weekly_forecast_screen.dart';
 
-class WeatherApp extends StatelessWidget {
-  const WeatherApp({super.key});
+class WeatherApp extends StatefulWidget {
+  const WeatherApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
+  @override
+  State<WeatherApp> createState() => _WeatherAppState();
+}
+
+class _WeatherAppState extends State<WeatherApp> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _widgetOptions = [
+    WeeklyForecastScreen(),
+    ChartScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(),
-      scrollBehavior: const ConstantScrollBehavior(),
-      title: 'Horizons Weather',
-      home: WeeklyForecastScreen(),
+      theme: ThemeData.light(),
+      title: 'Weather',
+      home: Scaffold(
+        body: Column(
+          children: <Widget>[
+            Flexible(
+              fit: FlexFit.tight,
+              child: Center(
+                child: _widgetOptions.elementAt(_selectedIndex),
+              ),
+            ),
+            BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.calendar_today),
+                  label: 'Forecast',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.show_chart),
+                  label: 'Charts',
+                ),
+              ],
+              currentIndex: _selectedIndex,
+              selectedItemColor: Colors.blue[800],
+              onTap: _onItemTapped,
+            ),
+          ],
+        ),
+      ),
     );
   }
-}
-
-class ConstantScrollBehavior extends ScrollBehavior {
-  const ConstantScrollBehavior();
-
-  @override
-  Widget buildScrollbar(
-          BuildContext context, Widget child, ScrollableDetails details) =>
-      child;
-
-  @override
-  Widget buildOverscrollIndicator(
-          BuildContext context, Widget child, ScrollableDetails details) =>
-      child;
-
-  @override
-  TargetPlatform getPlatform(BuildContext context) => TargetPlatform.macOS;
-
-  @override
-  ScrollPhysics getScrollPhysics(BuildContext context) =>
-      const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics());
 }
